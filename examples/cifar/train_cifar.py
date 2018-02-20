@@ -13,19 +13,12 @@ from chainer.datasets import get_cifar100
 import models.VGG
 
 # DEBUG CODE
-#import logging
-#import time
+import logging
+import time
 # DEBUG CODE END
 
 
 def main():
-    # DEBUG CODE
- #   print("Logging to chainer_debug.log")
- #   logging.basicConfig(filename='chainer_debug.log',level=logging.INFO,format='%(message)s')
- #   logging.info("CIFAR start at %s",time.strftime("%Y/%m/%d %H:%M:%S"))
- #   logging.debug("time1,time2,time3,Input,Class")
-    # DEBUG CODE END
-
 
     parser = argparse.ArgumentParser(description='Chainer CIFAR example:')
     parser.add_argument('--dataset', '-d', default='cifar10',
@@ -45,6 +38,13 @@ def main():
     parser.add_argument('--early-stopping', type=str,
                         help='Metric to watch for early stopping')
     args = parser.parse_args()
+
+    # DEBUG CODE
+    print("Logging to chainer_debug.log")
+    logging.basicConfig(filename='chainer_debug.log',level=logging.INFO,format='%(message)s')
+    logging.info("CIFAR start at %s, batch %d, epoch %d",time.strftime("%Y/%m/%d %H:%M:%S"),args.batchsize,args.epoch)
+    logging.debug("time1,time2,time3,Input,Class")
+    # DEBUG CODE END
 
     print('GPU: {}'.format(args.gpu))
     print('# Minibatch-size: {}'.format(args.batchsize))
