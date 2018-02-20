@@ -37,10 +37,12 @@ def main():
                         help='Resume the training from snapshot')
     parser.add_argument('--early-stopping', type=str,
                         help='Metric to watch for early stopping')
+    parser.add_argument('--host', type=str, help='Host name (used in log file name)')
     args = parser.parse_args()
 
     # DEBUG CODE
-    filename="chainer_timings_b"+str(args.batchsize)+"e"+str(args.epoch)+".log"
+    print(args)
+    filename="chainer_timings_"+str(args.host)+"_b"+str(args.batchsize)+"e"+str(args.epoch)+".log"
     print("Logging to "+filename)
     logging.basicConfig(filename=filename,level=logging.DEBUG,format='%(message)s')
     logging.info("CIFAR start at %s, batch %d, epoch %d",time.strftime("%Y/%m/%d %H:%M:%S"),args.batchsize,args.epoch)
