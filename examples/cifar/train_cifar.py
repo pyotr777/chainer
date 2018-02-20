@@ -40,7 +40,7 @@ def main():
     args = parser.parse_args()
 
     # DEBUG CODE
-    filename="chiner_timings_b"+str(args.batchsize)+"e"+str(args.epoch)
+    filename="chainer_timings_b"+str(args.batchsize)+"e"+str(args.epoch)+".log"
     print("Logging to "+filename)
     logging.basicConfig(filename=filename,level=logging.DEBUG,format='%(message)s')
     logging.info("CIFAR start at %s, batch %d, epoch %d",time.strftime("%Y/%m/%d %H:%M:%S"),args.batchsize,args.epoch)
