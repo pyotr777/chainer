@@ -41,7 +41,8 @@ def main():
 
     # DEBUG CODE
     print("Logging to chainer_debug.log")
-    logging.basicConfig(filename='chainer_debug.log',level=logging.INFO,format='%(message)s')
+    filename="chiner_timings_b"+str(args.batchsize)+"e"+str(args.epoch)
+    logging.basicConfig(filename=filename,level=logging.INFO,format='%(message)s')
     logging.info("CIFAR start at %s, batch %d, epoch %d",time.strftime("%Y/%m/%d %H:%M:%S"),args.batchsize,args.epoch)
     logging.debug("time1,time2,time3,Input,Class")
     # DEBUG CODE END
