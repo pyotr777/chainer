@@ -92,6 +92,11 @@ class Classifier(link.Chain):
 
         """
 
+        # DEBUG CODE
+        #print "Classifier called. self.lossfun=",self.lossfun
+        # Classifier called. self.lossfun= <function softmax_cross_entropy at 0x7fe397173500>
+        # DEBUG CODE END
+
         if isinstance(self.label_key, int):
             if not (-len(args) <= self.label_key < len(args)):
                 msg = 'Label key %d is out of bounds' % self.label_key
@@ -113,6 +118,12 @@ class Classifier(link.Chain):
         self.accuracy = None
         self.y = self.predictor(*args, **kwargs)
         self.loss = self.lossfun(self.y, t)
+
+        # DEBUG CODE
+        #print "\nClassifier loss = ",self.loss
+        # Classifier loss =  variable(2.6821895)
+        # DEBUG CODE END
+
         reporter.report({'loss': self.loss}, self)
         if self.compute_accuracy:
             self.accuracy = self.accfun(self.y, t)

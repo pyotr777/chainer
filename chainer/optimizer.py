@@ -377,6 +377,16 @@ class Optimizer(object):
             link (~chainer.Link): Target link object.
 
         """
+
+
+        # DEBUG CODE
+        #print "Optimizer.setup() called with link type", type(link)
+        # Optimizer.setup() called with link type <class 'chainer.links.model.classifier.Classifier'>
+        #print "Classifier lossfun object type:", type(link.lossfun)
+        # Classifier lossfun object type: <type 'function'>
+
+        # DEBUG CODE END
+
         if not isinstance(link, link_module.Link):
             raise TypeError('optimization target must be a link')
         self.target = link
@@ -575,6 +585,12 @@ class GradientMethod(Optimizer):
         parameter.
 
         """
+
+        # DEBUG CODE
+        # print "GradientMethod.update() is called with lossfun (type)",lossfun,"(",type(lossfun),")"
+        # GradientMethod.update() is called with lossfun (type) <chainer.links.model.classifier.Classifier object at 0x7f1fff47a990> ( <class 'chainer.links.model.classifier.Classifier'> )
+        # DEBUG CODE END
+
         if lossfun is not None:
             use_cleargrads = getattr(self, '_use_cleargrads', True)
             loss = lossfun(*args, **kwds)
@@ -582,6 +598,11 @@ class GradientMethod(Optimizer):
                 self.target.cleargrads()
             else:
                 self.target.zerograds()
+
+            # DEBUG CODE
+            # print "Calling loss.backward. loss type is ",type(loss)
+            # Calling loss.backward. loss type is  <class 'chainer.variable.Variable'>
+            # DEBUG CODE END
             loss.backward()
             del loss
 

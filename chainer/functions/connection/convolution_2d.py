@@ -9,6 +9,11 @@ import chainer.functions
 from chainer.utils import argument
 from chainer.utils import conv
 from chainer.utils import type_check
+# DEBUG CODE
+# import logging
+# logging.basicConfig(filename='chainer_debug.log',level=logging.DEBUG)
+# print "Logging to chainer_debug.log"
+# DEBUG CODE END
 
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn
@@ -77,6 +82,10 @@ class Convolution2DFunction(function_node.FunctionNode):
         self.cover_all = cover_all
         self.dy, self.dx = _pair(dilate)
         self.group = group
+
+        # DEBUG CODE
+        #logging.info("Call to convolution_2d init")
+        # DEBUG CODE END
 
     def check_type_forward(self, in_types):
         n_in = in_types.size()

@@ -12,8 +12,21 @@ from chainer.datasets import get_cifar100
 
 import models.VGG
 
+# DEBUG CODE
+#import logging
+#import time
+# DEBUG CODE END
+
 
 def main():
+    # DEBUG CODE
+ #   print("Logging to chainer_debug.log")
+ #   logging.basicConfig(filename='chainer_debug.log',level=logging.INFO,format='%(message)s')
+ #   logging.info("CIFAR start at %s",time.strftime("%Y/%m/%d %H:%M:%S"))
+ #   logging.debug("time1,time2,time3,Input,Class")
+    # DEBUG CODE END
+
+
     parser = argparse.ArgumentParser(description='Chainer CIFAR example:')
     parser.add_argument('--dataset', '-d', default='cifar10',
                         help='The dataset to use: cifar10 or cifar100')
@@ -61,6 +74,12 @@ def main():
     optimizer.setup(model)
     optimizer.add_hook(chainer.optimizer.WeightDecay(5e-4))
 
+
+    # DEBUG CODE
+    # Use 1000 samples for training
+    train = train[:2000]
+    # DEBUG CODE END
+
     train_iter = chainer.iterators.SerialIterator(train, args.batchsize)
     test_iter = chainer.iterators.SerialIterator(test, args.batchsize,
                                                  repeat=False, shuffle=False)
@@ -106,8 +125,8 @@ def main():
     # NOTE: If you use the EarlyStoppingTrigger,
     #       training_length is needed to set
     #       because trainer.stop_trigger is not normal interval trigger.
-    trainer.extend(extensions.ProgressBar(
-        training_length=(args.epoch, 'epoch')))
+    #trainer.extend(extensions.ProgressBar(
+    #    training_length=(args.epoch, 'epoch')))
 
     if args.resume:
         # Resume from a snapshot

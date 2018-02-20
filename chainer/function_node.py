@@ -13,6 +13,11 @@ from chainer import function_hook
 from chainer.utils import type_check
 from chainer import variable
 
+# DEBUG CODE
+import time
+import logging
+# DEBUG CODE END
+
 
 class FunctionNode(object):
 
@@ -218,6 +223,11 @@ Use apply() method instead.\
             A tuple of output :class:`~chainer.Variable` objects.
 
         """
+
+        # DEBUG CODE
+        start_time = time.time()
+        # DEBUG CODE END
+
         input_vars = [chainer.as_variable(x) for x in inputs]
         in_data = tuple([x.data for x in input_vars])
         requires_grad = any([x.requires_grad for x in input_vars])
@@ -250,11 +260,25 @@ Use apply() method instead.\
         for hook in hooks:
             hook.forward_preprocess(self, in_data)
 
+        # DEBUG CODE
+        point1_time = time.time()
+        point1 = point1_time - start_time
+
+        input_len = [len(x) for x in inputs]
+        input_len = str.replace(str(input_len),",",":")
+        # DEBUG CODE END
+
         # Forward propagation
         with cuda.get_device_from_array(*in_data):
             self._input_indexes_to_retain = None
             self._output_indexes_to_retain = None
             outputs = self.forward(in_data)
+
+
+        # DEBUG CODE
+        point2_time = time.time()
+        point2 = point2_time - point1_time
+        # DEBUG CODE END
 
         # Check for output array types
         if not isinstance(outputs, tuple):
@@ -263,6 +287,8 @@ Use apply() method instead.\
                 'Actual: {}'.format(self.label, type(outputs)))
 
         xp = cuda.get_array_module(*outputs)
+
+
         if not all([x is None or isinstance(x, xp.ndarray)
                     for x in outputs]):
             raise ValueError(
@@ -274,6 +300,8 @@ Use apply() method instead.\
 
         for hook in hooks:
             hook.forward_postprocess(self, in_data)
+
+
 
         # NaN check of output values
         if is_debug:
@@ -307,6 +335,16 @@ Use apply() method instead.\
                     ret[index].retain_data()
                     retained_data.append(outputs[index])
                 self._retained_output_data = tuple(retained_data)
+
+
+        # DEBUG CODE
+        point3_time = time.time()
+        point3 = point3_time - point2_time
+        classname = self.__class__.__name__
+
+        logging.debug("%f,%f,%f,%s,%s",point1,point2,point3,str(input_len),classname)
+        #print "{:.6f},{:.6f},{:.6f},{:<24},{}".format(point1,point2,point3,str(input_len),classname)
+        # DEBUG CODE END
 
         return ret
 

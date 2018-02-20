@@ -373,6 +373,12 @@ for row, column in enumerate(t)])
 
     """
 
+    # DEBUG CODE
+    #print "softmax_cross_entropy called with enable_double_backprop=",enable_double_backprop
+    # softmax_cross_entropy called with enable_double_backprop= False
+    # DEBUG CODE END
+
+
     if enable_double_backprop:
         return _double_backward_softmax_cross_entropy(
             x, t, normalize, class_weight, ignore_label, reduce)

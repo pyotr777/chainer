@@ -5,6 +5,7 @@
 *.pyo
 *.cpp
 *.so
+*.log
 build
 \#*\#
 .\#*
