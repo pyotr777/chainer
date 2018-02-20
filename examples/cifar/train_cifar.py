@@ -82,8 +82,8 @@ def main():
 
     # DEBUG CODE
     # Use 1000 samples for training
-    if (debug):
-        train = train[:2000]
+    #if (debug):
+    #    train = train[:2000]
     # DEBUG CODE END
 
     train_iter = chainer.iterators.SerialIterator(train, args.batchsize)
