@@ -12,6 +12,12 @@ from chainer.datasets import get_cifar100
 
 import models.VGG
 
+# DEBUG CODE
+import logging
+import time
+import debug_conf
+# DEBUG CODE END
+
 
 
 def main():
@@ -37,6 +43,27 @@ def main():
     parser.add_argument('--debug', action='store_true', help='Log timing info')
     args = parser.parse_args()
 
+    # DEBUG CODE
+    debug_conf.debug = args.debug
+    debug = debug_conf.debug
+    print("Debug:",debug_conf.debug)
+    if (debug):
+        log_cupy_core_array = True
+        if log_cupy_core_array:
+            debug_conf.time_function_node = False
+            debug_conf.time_cuda = False
+            debug_conf.time_convert = True
+
+        filename="chainer_timings_"+str(args.host)+"_b"+str(args.batchsize)+"e"+str(args.epoch)+".log"
+        print("Logging to "+filename)
+        logging.basicConfig(filename=filename,level=logging.DEBUG,format='%(message)s')
+        logging.info("CIFAR start at %s, batch %d, epoch %d",time.strftime("%Y/%m/%d %H:%M:%S"),args.batchsize,args.epoch)
+        if debug_conf.time_function_node:
+            logging.debug("time1,time2,time3,Input,Class")
+        else:
+            logging.debug("Address,Parameter,Value")
+
+    # DEBUG CODE END
 
     print('GPU: {}'.format(args.gpu))
     print('# Minibatch-size: {}'.format(args.batchsize))
@@ -66,6 +93,12 @@ def main():
     optimizer.setup(model)
     optimizer.add_hook(chainer.optimizer.WeightDecay(5e-4))
 
+
+    # DEBUG CODE
+    # Use 1000 samples for training
+    #if (debug):
+    #    train = train[:2000]
+    # DEBUG CODE END
 
     train_iter = chainer.iterators.SerialIterator(train, args.batchsize)
     test_iter = chainer.iterators.SerialIterator(test, args.batchsize,

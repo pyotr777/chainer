@@ -32,6 +32,12 @@ import six
 import chainer
 from chainer.configuration import config
 
+# DEBUG CODE
+import time
+import debug_conf
+import logging
+# DEBUG CODE END
+
 
 available = False
 cudnn_enabled = False
@@ -281,6 +287,12 @@ def _array_to_gpu(array, device, stream):
     assert device is DummyDevice or isinstance(device, Device)
     if array is None:
         return None
+
+    # DEBUG CODE
+    if debug_conf.debug and debug_conf.time_cuda:
+        start_time = time.time()
+        logging.debug("%s, %s, %s","cuda.py/_array_to_gpu","Array type",type(array))
+    # DEBUG CODE END
     if isinstance(array, (numpy.number, numpy.bool_)):
         array = numpy.asarray(array)
     if not isinstance(array, (cupy.ndarray, numpy.ndarray)):
@@ -290,6 +302,19 @@ def _array_to_gpu(array, device, stream):
             '\nActual type: {0}.'.format(type(array)))
 
     array_dev = get_device_from_array(array)
+    # DEBUG CODE
+    if debug_conf.debug and debug_conf.time_cuda:
+        point1 = time.time()
+        point1_delta = point1 - start_time
+        logging.debug("%s,%s,%d","cuda.py/_array_to_gpu:310","array_dev.id",array_dev.id)
+        logging.debug("%s,%s,%d","cuda.py/_array_to_gpu:310","cupy.cuda.device.get_device_id()",cupy.cuda.device.get_device_id())
+        logging.debug("%s,%s,%s","cuda.py/_array_to_gpu:310","array.dtype",array.dtype)
+        logging.debug("%s,%s,%s","cuda.py/_array_to_gpu:310","array.shape",str.replace(str(array.shape),",",":"))
+        logging.debug("%s,%s,%s","cuda.py/_array_to_gpu:310"+str.replace(str(array.shape),",",":"),"array.size",array.size)
+        logging.debug("%s,%s,%s","cuda.py/_array_to_gpu:310"+str.replace(str(array.shape),",",":"),"array.itemsize",array.itemsize)
+        logging.debug("%s,%s,%s","cuda.py/_array_to_gpu:310"+str.replace(str(array.shape),",",":"),"array.nbytes",array.nbytes)
+        logging.debug("%s,%s,%f","cuda.py/_array_to_gpu:310"+str.replace(str(array.shape),",",":"),"point1_delta (s)",point1_delta)
+    # DEBUG CODE END
     if array_dev.id == cupy.cuda.device.get_device_id():
         return array
 
@@ -318,8 +343,22 @@ def _array_to_gpu(array, device, stream):
             stream.add_callback(lambda *x: None, (src, ret))
         return ret
 
+    # DEBUG CODE
+    if debug_conf.debug and debug_conf.time_cuda:
+        point2 = time.time()
+        point2_delta = point2 - point1
+        logging.debug("%s,%s,%f","cuda.py/_array_to_gpu:340"+str.replace(str(array.shape),",",":"),"point2_delta (s)",point2_delta)
+    # DEBUG CODE END
     if array_dev.id == -1:
-        return cupy.asarray(array)
+        cupy_arr = cupy.asarray(array)
+        # DEBUG CODE
+        if debug_conf.debug and debug_conf.time_cuda:
+            point3 = time.time()
+            point3_delta = point3 - point2
+            logging.debug("%s,%s,%s","cuda.py/_array_to_gpu:360"+str.replace(str(array.shape),",",":"),"cupy_arr type",type(cupy_arr))
+            logging.debug("%s,%s,%f","cuda.py/_array_to_gpu:360"+str.replace(str(array.shape),",",":"),"point3_delta (s)",point3_delta)
+        # DEBUG CODE END
+        return cupy_arr
 
     # Need to make a copy when an array is copied to another device
     return cupy.array(array, copy=True)

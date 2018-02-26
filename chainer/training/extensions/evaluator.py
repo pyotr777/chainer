@@ -9,7 +9,9 @@ from chainer import function
 from chainer import link
 from chainer import reporter as reporter_module
 from chainer.training import extension
-
+# DEBUG CODE
+import debug_conf
+# DEBUG CODE END
 
 class Evaluator(extension.Extension):
 
@@ -75,6 +77,12 @@ class Evaluator(extension.Extension):
 
     def __init__(self, iterator, target, converter=convert.concat_examples,
                  device=None, eval_hook=None, eval_func=None):
+
+        # DEBUG CODE
+        #if debug_conf.debug:
+        #    print "Called Evaluator __init__. Converter type:",type(converter)
+        # DEBUG CODE END
+
         if isinstance(iterator, iterator_module.Iterator):
             iterator = {'main': iterator}
         self._iterators = iterator

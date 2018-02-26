@@ -14,6 +14,10 @@ from chainer.training import extension as extension_module
 from chainer.training import trigger as trigger_module
 from chainer.utils import argument
 
+# DEBUG CODE
+#import logging
+import debug_conf
+# DEBUG CODE END
 
 # Select the best-resolution timer function
 try:
@@ -304,6 +308,8 @@ class Trainer(object):
                     update()
                     for name, entry in extensions:
                         if entry.trigger(self):
+                            #if debug_conf.debug:
+                            #    print("Triggered extension",name,entry)
                             entry.extension(self)
         except Exception as e:
             if show_loop_exception_msg:

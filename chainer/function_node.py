@@ -16,6 +16,7 @@ from chainer import variable
 # DEBUG CODE
 import time
 import logging
+import debug_conf
 # DEBUG CODE END
 
 
@@ -225,7 +226,8 @@ Use apply() method instead.\
         """
 
         # DEBUG CODE
-        start_time = time.time()
+        if debug_conf.debug and debug_conf.time_function_node:
+            start_time = time.time()
         # DEBUG CODE END
 
         input_vars = [chainer.as_variable(x) for x in inputs]
@@ -261,11 +263,12 @@ Use apply() method instead.\
             hook.forward_preprocess(self, in_data)
 
         # DEBUG CODE
-        point1_time = time.time()
-        point1 = point1_time - start_time
+        if debug_conf.debug and debug_conf.time_function_node:
+            point1_time = time.time()
+            point1 = point1_time - start_time
 
-        input_len = [len(x) for x in inputs]
-        input_len = str.replace(str(input_len),",",":")
+            input_len = [len(x) for x in inputs]
+            input_len = str.replace(str(input_len),",",":")
         # DEBUG CODE END
 
         # Forward propagation
@@ -276,8 +279,9 @@ Use apply() method instead.\
 
 
         # DEBUG CODE
-        point2_time = time.time()
-        point2 = point2_time - point1_time
+        if debug_conf.debug and debug_conf.time_function_node:
+            point2_time = time.time()
+            point2 = point2_time - point1_time
         # DEBUG CODE END
 
         # Check for output array types
@@ -338,12 +342,13 @@ Use apply() method instead.\
 
 
         # DEBUG CODE
-        point3_time = time.time()
-        point3 = point3_time - point2_time
-        classname = self.__class__.__name__
+        if debug_conf.debug and debug_conf.time_function_node:
+            point3_time = time.time()
+            point3 = point3_time - point2_time
+            classname = self.__class__.__name__
 
-        logging.debug("%f,%f,%f,%s,%s",point1,point2,point3,str(input_len),classname)
-        #print "{:.6f},{:.6f},{:.6f},{:<24},{}".format(point1,point2,point3,str(input_len),classname)
+            logging.debug("%f,%f,%f,%s,%s",point1,point2,point3,str(input_len),classname)
+            #print "{:.6f},{:.6f},{:.6f},{:<24},{}".format(point1,point2,point3,str(input_len),classname)
         # DEBUG CODE END
 
         return ret
