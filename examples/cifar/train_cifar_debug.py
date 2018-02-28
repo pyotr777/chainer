@@ -48,7 +48,12 @@ def main():
     debug = debug_conf.debug
     print("Debug:",debug_conf.debug)
     if (debug):
-        log_cupy_core_array = True
+        debug_conf.time_function_node = False
+        debug_conf.time_cuda = False
+        debug_conf.time_convert = False
+        debug_conf.time_optimizer_update = True
+        log_cupy_core_array = False
+
         if log_cupy_core_array:
             debug_conf.time_function_node = False
             debug_conf.time_cuda = False

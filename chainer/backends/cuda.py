@@ -507,9 +507,20 @@ def elementwise(in_params, out_params, operation, name, **kwargs):
     mandatory.
 
     """
+
+    # DEBUG CODE
+    if debug_conf.debug and debug_conf.time_optimizer_update:
+        start_time = time.time()
+    # DEBUG CODE END
     check_cuda_available()
-    return cupy.ElementwiseKernel(
-        in_params, out_params, operation, name, **kwargs)
+    kernel = cupy.ElementwiseKernel(in_params, out_params, operation, name, **kwargs)
+    # DEBUG CODE
+    if debug_conf.debug and debug_conf.time_optimizer_update:
+        point1_time = time.time()
+        point1_delta = point1_time - start_time
+        logging.debug("%s,%s,%f","cuda.py/elementwise","time(s)",point1_delta)
+    # DEBUG CODE END
+    return kernel
 
 
 @memoize(for_each_device=True)

@@ -8,6 +8,12 @@ from chainer.functions.activation import log_softmax
 from chainer.utils import type_check
 from chainer import variable
 
+# DEBUG CODE
+import time
+import debug_conf
+import logging
+# DEBUG CODE END
+
 
 def _broadcast_to(array, shape):
     if hasattr(numpy, 'broadcast_to'):
@@ -220,6 +226,13 @@ class SoftmaxCrossEntropy(function.Function):
         else:
             coeff = gloss[:, None, ...]
 
+        # DEBUG CODE
+        if debug_conf.debug and debug_conf.time_optimizer_update:
+            #logging.debug("%s,%s,%s","softmax_cross_entropy.py/SoftmaxCrossEntropy/backward_gpu","class_weight",type(self.class_weight))
+            # Always None for CIFAR100 example
+            start_time = time.time()
+        # DEBUG CODE END
+
         if self.class_weight is None:
             gx = cuda.elementwise(
                 'T y, S t, T coeff, S n_channel, S n_unit, S ignore_label',
@@ -243,6 +256,13 @@ class SoftmaxCrossEntropy(function.Function):
                 'softmax_crossent_weight_bwd')(
                     y, self.class_weight, cupy.expand_dims(t, 1), coeff,
                     x.shape[1], n_unit, self.ignore_label)
+
+        # DEBUG CODE
+        if debug_conf.debug and debug_conf.time_optimizer_update:
+            point2_time = time.time()
+            point2_delta = point2_time - start_time
+            logging.debug("%s,%s,%f","softmax_cross_entropy.py/SoftmaxCrossEntropy/backward_gpu","time(s)",point2_delta)
+        # DEBUG CODE END
 
         return gx, None
 
