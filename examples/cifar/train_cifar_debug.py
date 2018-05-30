@@ -14,7 +14,7 @@ import models.VGG
 
 # DEBUG CODE
 import logging
-import time
+import time, os
 import debug_conf
 # DEBUG CODE END
 
@@ -39,7 +39,7 @@ def main():
                         help='Resume the training from snapshot')
     parser.add_argument('--early-stopping', type=str,
                         help='Metric to watch for early stopping')
-    parser.add_argument('--host', type=str, help='Host name (used in log file name)')
+    parser.add_argument('--host', type=str, help='Host name (used in log file name)', default="")
     parser.add_argument('--debug', action='store_true', help='Log timing info')
     args = parser.parse_args()
 
@@ -47,11 +47,11 @@ def main():
     debug_conf.debug = args.debug
     debug = debug_conf.debug
     print("Debug:",debug_conf.debug)
-    if (debug):
+    if debug:
         debug_conf.time_function_node = False
         debug_conf.time_cuda = False
         debug_conf.time_convert = False
-        debug_conf.time_optimizer_update = True
+        debug_conf.time_optimizer_update = False
         log_cupy_core_array = False
 
         if log_cupy_core_array:
@@ -59,14 +59,21 @@ def main():
             debug_conf.time_cuda = False
             debug_conf.time_convert = True
 
-        filename="chainer_timings_"+str(args.host)+"_b"+str(args.batchsize)+"e"+str(args.epoch)+".log"
-        print("Logging to "+filename)
-        logging.basicConfig(filename=filename,level=logging.DEBUG,format='%(message)s')
+        # Save timings in convolution_2d.py
+        debug_conf.log_convolution = True
+
+        filename="chainer_timings_"+str(args.host)+"_b"+str(args.batchsize)+"e"+str(args.epoch)+".csv"
+        wd = os.getcwd()
+        logfile = os.path.join(wd,filename)
+        logging.basicConfig(filename=logfile,level=logging.DEBUG)
+        print("Logging to {}".format(logfile))
+        logging.debug("Place; Parameter; Value")
+        #logging.basicConfig(filename=filename,level=logging.DEBUG,format='%(message)s')
         logging.info("CIFAR start at %s, batch %d, epoch %d",time.strftime("%Y/%m/%d %H:%M:%S"),args.batchsize,args.epoch)
         if debug_conf.time_function_node:
-            logging.debug("time1,time2,time3,Input,Class")
+            logging.debug("time1;time2;time3;Input;Class")
         else:
-            logging.debug("Address,Parameter,Value")
+            logging.debug("Address;Parameter;Value")
 
     # DEBUG CODE END
 
