@@ -22,6 +22,12 @@ import os
 # import random
 # import numpy as np
 
+# DEBUG CODE
+import logging
+import time, os
+import debug_conf
+# DEBUG CODE END
+
 base_time=0
 
 def main():
@@ -50,7 +56,50 @@ def main():
     parser.add_argument('--samples', type=int, default=None, help="Training set size")
     parser.add_argument('--iterations', type=int, default=None, help="Limit number of training iterations")
     parser.add_argument('--model', type=str, default="VGG", help="Model name in format modu")
+    parser.add_argument('--convolutions', type=str, default=None, help="Output channels for a simple one convolution layer model.")
     args = parser.parse_args()
+
+
+# DEBUG CODE
+    debug_conf.debug = args.debug
+    debug = debug_conf.debug
+    print("Debug:",debug_conf.debug)
+    if debug:
+        debug_conf.time_function_node = False
+        debug_conf.time_cuda = False
+        debug_conf.time_convert = False
+        debug_conf.time_optimizer_update = False
+        log_cupy_core_array = False
+
+        if log_cupy_core_array:
+            debug_conf.time_function_node = False
+            debug_conf.time_cuda = False
+            debug_conf.time_convert = False
+
+        # Save timings in convolution_2d.py
+        debug_conf.log_convolution_forward = False
+        debug_conf.log_convolution_backward = True
+
+        if args.host:
+            hostname = args.hostname
+        else:
+            import socket
+            hostname = socket.gethostname()
+
+        filename="chainer_timings_"+str(hostname)+"_b"+str(args.batchsize)+"e"+str(args.epoch)+".csv"
+        wd = os.getcwd()
+        logfile = os.path.join(wd,filename)
+        logging.basicConfig(filename=logfile,level=logging.DEBUG)
+        print("Logging to {}".format(logfile))
+        #logging.basicConfig(filename=filename,level=logging.DEBUG,format='%(message)s')
+        logging.info("CIFAR start at %s, batch %d, epoch %d",time.strftime("%Y/%m/%d %H:%M:%S"),args.batchsize,args.epoch)
+        if debug_conf.time_function_node:
+            logging.debug("time1;time2;time3;Input;Class")
+        else:
+            logging.debug("Address;Parameter;Value")
+
+    # DEBUG CODE END
+
 
     print('GPU: {}'.format(args.gpu))
     print('# b{} l{}'.format(args.batchsize,args.learnrate))
@@ -102,13 +151,22 @@ def main():
 
     print('')
 
-    model_module = __import__("models."+args.model)
-    model_class = args.model
+    if args.convolutions:
+        out_channels = [int(x) for x in args.convolutions.split(',')]
+        model_module = __import__("models.conv_multilayer")
+        model_class = "conv_multilayer"
+        module = getattr(model_module,model_class)
+        method = getattr(module,model_class)
+        print("Method:",method)
+        model = L.Classifier(method(out_channels, class_labels))
+    else:
+        model_module = __import__("models."+args.model)
+        model_class = args.model
+        module = getattr(model_module,model_class)
+        method = getattr(module,model_class)
+        print("Method:",method)
+        model = L.Classifier(method(class_labels))
 
-    module = getattr(model_module,model_class)
-    method = getattr(module,model_class)
-    print("Method:",method)
-    model = L.Classifier(method(class_labels))
     #model = L.Classifier(models.VGG.VGG(class_labels))
     if args.gpu >= 0:
         # Make a specified GPU current

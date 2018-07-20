@@ -62,8 +62,10 @@ class model64(chainer.Chain):
     def __init__(self, class_labels=10):
         super(model64, self).__init__()
         with self.init_scope():
-            self.block1_1 = Block(64, 3)
-            #self.block1_2 = Block(64, 3)
+            self.block64 = Block(64, 3)
+            #self.block128 = Block(128, 3)
+            #self.block256 = Block(256, 3)
+            #self.block512 = Block(512, 3)
 
             self.fc1 = L.Linear(None, 512, nobias=True)
             self.bn_fc1 = L.BatchNormalization(512)
@@ -71,9 +73,8 @@ class model64(chainer.Chain):
 
     def __call__(self, x):
         # 64 channel blocks:
-        h = self.block1_1(x)
+        h = self.block64(x)
         h = F.dropout(h, ratio=0.3)
-        #h = self.block1_2(h)
         h = F.max_pooling_2d(h, ksize=2, stride=2)
 
 

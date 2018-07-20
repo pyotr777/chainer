@@ -10,6 +10,7 @@
 build
 \#*\#
 .\#*
+**/examples/**/sync*.*
 .coverage
 .eggs/
 _readthedocs_build

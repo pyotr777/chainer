@@ -158,7 +158,7 @@ class Convolution2DFunction(function_node.FunctionNode):
         # DEBUG CODE
         # Log x and W shapes. They could have hints on 1 epoch time differences on K80
         # Use ';' as delimiter for CSV format (',' ofthen used in output )
-        if debug_conf.debug and debug_conf.log_convolution:
+        if debug_conf.debug and debug_conf.log_convolution_forward:
             start_time = time.time()
             logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DFunction:forward_gpu","x shape",x.shape)
             logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DFunction:forward_gpu","W shape",W.shape)
@@ -181,7 +181,7 @@ class Convolution2DFunction(function_node.FunctionNode):
             # cuDNN implementation
             y = self._forward_cudnn(x, W, b, y)
             # DEBUG CODE
-            if debug_conf.debug and debug_conf.log_convolution:
+            if debug_conf.debug and debug_conf.log_convolution_forward:
                  point1 = time.time()
                  point1_delta = point1 - start_time
                  logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DFunction:forward_gpu","time in usecudnn (s)",point1_delta)
@@ -200,7 +200,7 @@ class Convolution2DFunction(function_node.FunctionNode):
         kh, kw = W.shape[2:]
         # DEBUG CODE
         # Log x and W shapes. They could have hints on 1 epoch time differences on K80
-        if debug_conf.debug and debug_conf.log_convolution:
+        if debug_conf.debug and debug_conf.log_convolution_forward:
             start_time = time.time()
             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/_forward_gpu_core","x shape",x.shape)
             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/_forward_gpu_core","W shape",W.shape)
@@ -330,6 +330,17 @@ class Convolution2DFunction(function_node.FunctionNode):
         x, W = self.get_retained_inputs()
         gy, = grad_outputs
 
+
+        # DEBUG CODE
+        # Log x and W shapes. They could have hints on 1 epoch time differences on K80
+        # Use ';' as delimiter for CSV format (',' ofthen used in output )
+        if debug_conf.debug and debug_conf.log_convolution_backward:
+            start_time = time.time()
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DFunction:backward","x shape",x.shape)
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DFunction:backward","gy shape",W.shape)
+        # DEBUG CODE END
+
+
         ret = []
         if 0 in indexes:
             xh, xw = x.shape[2:]
@@ -339,6 +350,16 @@ class Convolution2DFunction(function_node.FunctionNode):
             ret.append(gx)
         if 1 in indexes:
             gW, = Convolution2DGradW(self).apply((x, gy))
+
+            # DEBUG CODE
+            if debug_conf.debug and debug_conf.log_convolution_backward:
+                 point1 = time.time()
+                 point1_delta = point1 - start_time
+                 logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DFunction:backward","gW shape",gW.shape)
+                 logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DFunction:backward","time in Convolution2DGradW (s)",point1_delta)
+
+            # DEBUG CODE END
+
             ret.append(gW)
         if 2 in indexes:
             gb = chainer.functions.sum(gy, axis=(0, 2, 3))

@@ -34,6 +34,7 @@ def main():
     parser.add_argument('--early-stopping', type=str,
                         help='Metric to watch for early stopping')
     parser.add_argument('--host', type=str, help='Host name (used in log file name)')
+    parser.add_argument('--debug', action='store_true', help='Log timing info')
     args = parser.parse_args()
 
 
