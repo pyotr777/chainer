@@ -228,6 +228,8 @@ Use apply() method instead.\
         # DEBUG CODE
         if debug_conf.debug and debug_conf.time_function_node:
             start_time = time.time()
+            start_time_rel = start_time - debug_conf.start_time
+            logging.debug("%s, %s, %s","function_node.py/FunctionNode:apply","start_time",start_time_rel)
         # DEBUG CODE END
 
         input_vars = [chainer.as_variable(x) for x in inputs]

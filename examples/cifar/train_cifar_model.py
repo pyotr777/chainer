@@ -65,7 +65,8 @@ def main():
     debug = debug_conf.debug
     print("Debug:",debug_conf.debug)
     if debug:
-        debug_conf.time_function_node = False
+        debug_conf.start_time = time.time()
+        debug_conf.time_function_node = True
         debug_conf.time_cuda = False
         debug_conf.time_convert = False
         debug_conf.time_optimizer_update = False
@@ -79,9 +80,10 @@ def main():
         # Save timings in convolution_2d.py
         debug_conf.log_convolution_forward = False
         debug_conf.log_convolution_backward = True
+        debug_conf.log_convolution = True
 
         if args.host:
-            hostname = args.hostname
+            hostname = args.host
         else:
             import socket
             hostname = socket.gethostname()
