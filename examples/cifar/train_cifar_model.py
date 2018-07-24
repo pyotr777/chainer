@@ -51,6 +51,7 @@ def main():
                         help='Metric to watch for early stopping')
     parser.add_argument('--host', type=str, help='Host name (used in log file name)')
     parser.add_argument('--debug', action='store_true', help='Log timing info')
+    parser.add_argument('--algo', type=int, default=None, help="Convolution backward algorithm for cuDNN")
     parser.add_argument('--accuracy', type=float, default=None, help='Log timing info')
     parser.add_argument('--time_limit', type=int, default=None, help="Execution time limit in seconds")
     parser.add_argument('--samples', type=int, default=None, help="Training set size")
@@ -66,7 +67,7 @@ def main():
     print("Debug:",debug_conf.debug)
     if debug:
         debug_conf.start_time = time.time()
-        debug_conf.time_function_node = True
+        debug_conf.time_function_node = False
         debug_conf.time_cuda = False
         debug_conf.time_convert = False
         debug_conf.time_optimizer_update = False
@@ -79,8 +80,13 @@ def main():
 
         # Save timings in convolution_2d.py
         debug_conf.log_convolution_forward = False
-        debug_conf.log_convolution_backward = True
-        debug_conf.log_convolution = True
+        debug_conf.log_convolution_backward = False
+        debug_conf.log_convolution = False
+
+        debug_conf.change_bwd_conv_algo = False # Do not change!
+        if args.algo:
+            debug_conf.change_bwd_conv_algo = args.algo
+            print("Using algo",debug_conf.change_bwd_conv_algo)
 
         if args.host:
             hostname = args.host

@@ -568,13 +568,17 @@ class Convolution2DGradW(function_node.FunctionNode):
             algo = libcudnn.CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1
 
         # DEBUG CODE
-        algo = libcudnn.CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1
+        if debug_conf.debug and debug_conf.change_bwd_conv_algo:
+            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","was algo",algo)
+            algo = debug_conf.change_bwd_conv_algo
+            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","set algo to",algo)
 
         if debug_conf.debug and debug_conf.log_convolution_backward:
             point1 = time.time()
             point1_delta = point1 - start_time
             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","_bwd_filter_pref",_bwd_filter_pref)
             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","algo",algo)
+            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","change_bwd_conv_algo",debug_conf.change_bwd_conv_algo)
         # DEBUG CODE END
 
         libcudnn.convolutionBackwardFilter_v3(
@@ -587,8 +591,7 @@ class Convolution2DGradW(function_node.FunctionNode):
             point2 = time.time()
             point2_delta = point2 - point1
             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","x_desc.value",x_desc.value)
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","cudnn_deterministic ",configuration.config.cudnn_deterministic)
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","autotune",configuration.config.autotune)
+            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","(cudnn_deterministic,autotune,use_tensor_core) ","({},{},{})".format(configuration.config.cudnn_deterministic,configuration.config.autotune,use_tensor_core))
             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","gy_desc.value",gy_desc.value)
             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","conv_desc.value",conv_desc.value)
             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","workspace_size",workspace_size)
