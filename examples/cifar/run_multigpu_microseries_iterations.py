@@ -17,38 +17,39 @@ runs = 2
 batchsizes = [9] + range(10,17,2) + range(20,250,20)
 learnrates=[0.15]
 epochs = 1
-#iterations = [2,4,8,16,32,64,128]
+iterations = [1,2]
 tasks = []
-logdir = "logs/cifar_VGG_timings_and_profiles/deterministic/"
+logdir = "logs/cifar_VGG_timings_and_profiles/iteration_timings_and_profiles/"
 algo=1
 with_profiling = True
-logfilebase = "cifar_VGG_determ"
-command = "python chainer/examples/cifar/deterministic/train_cifar_determ.py -d cifar100"
+logfilebase = "cifar_VGG"
+command = "python chainer/examples/cifar/train_cifar_model.py -d cifar100 --model VGG"
 if not os.path.exists(logdir):
     os.makedirs(logdir)
 print "Logdir",logdir
 
-#for iterate in iterations:
+#
 for run in range(runs):
     for batch in batchsizes:
         for lr in learnrates:
-            logname = "{}_b{}_l{}_{:01d}".format(logfilebase,batch,lr,run)
-            logfile = os.path.join(logdir,"{}.log".format(logname))
-            command_pars = command+" -e {} -b {} -l {} ".format(epochs,batch,lr)
-            if os.path.isfile(logfile):
-                print "file",logfile,"exists."
-            else:
-                task = {"comm":command_pars,"logfile":logfile,"batch":batch,"nvsmi":True}
-                tasks.append(task)
-
-            if with_profiling:
-                logfile = os.path.join(logdir,"{}.nvprof".format(logname))
+            for iter in iterations:
+                logname = "{}_b{}_l{}_iter{}_{:01d}".format(logfilebase,batch,lr,iter,run)
+                logfile = os.path.join(logdir,"{}.log".format(logname))
+                command_pars = command+"--iterations {} -e {} -b {} -l {} ".format(iter,epochs,batch,lr)
                 if os.path.isfile(logfile):
                     print "file",logfile,"exists."
                 else:
-                    profcommand = "nvprof  -u s --profile-api-trace none --unified-memory-profiling off --csv --log-file {} {}".format(logfile,command_pars)
-                    task = {"comm":profcommand,"logfile":logfile,"batch":batch,"nvsmi":False}
+                    task = {"comm":command_pars,"logfile":logfile,"batch":batch,"nvsmi":True}
                     tasks.append(task)
+
+                if with_profiling:
+                    logfile = os.path.join(logdir,"{}.nvprof".format(logname))
+                    if os.path.isfile(logfile):
+                        print "file",logfile,"exists."
+                    else:
+                        profcommand = "nvprof  -u s --profile-api-trace none --unified-memory-profiling off --csv --log-file {} {}".format(logfile,command_pars)
+                        task = {"comm":profcommand,"logfile":logfile,"batch":batch,"nvsmi":False}
+                        tasks.append(task)
 
 print "Have",len(tasks),"tasks"
 gpu = -1

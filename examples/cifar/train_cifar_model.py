@@ -80,7 +80,7 @@ def main():
 
         # Save timings in convolution_2d.py
         debug_conf.log_convolution_forward = False
-        debug_conf.log_convolution_backward = False
+        debug_conf.log_convolution_backward = True
         debug_conf.log_convolution = False
 
         debug_conf.change_bwd_conv_algo = False # Do not change!
