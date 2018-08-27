@@ -11,6 +11,7 @@ from chainer import training
 from chainer.training import extensions
 from chainer.training import triggers
 from chainer.training import util
+from chainer import configuration
 
 from chainer.datasets import get_cifar10
 from chainer.datasets import get_cifar100
@@ -61,7 +62,7 @@ def main():
     args = parser.parse_args()
 
 
-# DEBUG CODE
+    # DEBUG CODE
     debug_conf.debug = args.debug
     debug = debug_conf.debug
     print("Debug:",debug_conf.debug)
@@ -83,11 +84,6 @@ def main():
         debug_conf.log_convolution_backward = True
         debug_conf.log_convolution = False
 
-        debug_conf.change_bwd_conv_algo = False # Do not change!
-        if args.algo:
-            debug_conf.change_bwd_conv_algo = args.algo
-            print("Using algo",debug_conf.change_bwd_conv_algo)
-
         if args.host:
             hostname = args.host
         else:
@@ -108,6 +104,9 @@ def main():
 
     # DEBUG CODE END
 
+    if args.algo is not None:
+        configuration.bwd_conv_algo = args.algo
+        print("BWD convolution filter algo:",configuration.bwd_conv_algo)
 
     print('GPU: {}'.format(args.gpu))
     print('# b{} l{}'.format(args.batchsize,args.learnrate))

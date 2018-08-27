@@ -411,7 +411,6 @@ class Convolution2DGradW(function_node.FunctionNode):
     def forward_gpu(self, inputs):
         # DEBUG CODE
         if debug_conf.debug and debug_conf.log_convolution_backward:
-            start_time = time.time()
             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:forward_gpu","inputs",str(inputs[0].shape)+","+str(inputs[1].shape))
 
         # DEBUG CODE END
@@ -568,9 +567,18 @@ class Convolution2DGradW(function_node.FunctionNode):
             algo = libcudnn.CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1
 
         # DEBUG CODE
-        if debug_conf.debug and debug_conf.change_bwd_conv_algo:
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","was algo",algo)
-            algo = debug_conf.change_bwd_conv_algo
+        algo_before = None
+        if debug_conf.debug and configuration.bwd_conv_algo is not None:
+            algo_before = algo
+        # DEBUG CODE END
+
+        if hasattr(configuration,"bwd_conv_algo"):
+            algo = configuration.bwd_conv_algo
+
+        # DEBUG CODE
+        if debug_conf.debug:
+            if algo_before is not None:
+                logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","before algo was",algo_before)
             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","set algo to",algo)
 
         if debug_conf.debug and debug_conf.log_convolution_backward:
