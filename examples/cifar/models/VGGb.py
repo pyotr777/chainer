@@ -3,24 +3,10 @@ from __future__ import print_function
 import chainer
 import chainer.functions as F
 import chainer.links as L
-
+import cupy as cp
 
 class Block(chainer.Chain):
 
-    """A convolution, batch norm, ReLU block.
-
-    A block in a feedforward network that performs a
-    convolution followed by batch normalization followed
-    by a ReLU activation.
-
-    For the convolution operation, a square filter size is used.
-
-    Args:
-        out_channels (int): The number of output channels.
-        ksize (int): The size of the filter is ksize x ksize.
-        pad (int): The padding to use for the convolution.
-
-    """
 
     def __init__(self, out_channels, ksize, pad=1):
         super(Block, self).__init__()
@@ -37,28 +23,6 @@ class Block(chainer.Chain):
 
 class VGGb(chainer.Chain):
 
-    """A VGG-style network for very small images.
-
-    This model is based on the VGG-style model from
-    http://torch.ch/blog/2015/07/30/cifar.html
-    which is based on the network architecture from the paper:
-    https://arxiv.org/pdf/1409.1556v6.pdf
-
-    This model is intended to be used with either RGB or greyscale input
-    images that are of size 32x32 pixels, such as those in the CIFAR10
-    and CIFAR100 datasets.
-
-    On CIFAR10, it achieves approximately 89% accuracy on the test set with
-    no data augmentation.
-
-    On CIFAR100, it achieves approximately 63% accuracy on the test set with
-    no data augmentation.
-
-    Args:
-        class_labels (int): The number of class labels.
-
-    """
-
     def __init__(self, class_labels=10):
         super(VGGb, self).__init__()
         with self.init_scope():
@@ -69,9 +33,10 @@ class VGGb(chainer.Chain):
             self.fc2 = L.Linear(None, class_labels, nobias=True)
 
     def __call__(self, x):
-
+        # print("x shape: {}".format(x.shape)) # x shape: (40, 3, 32, 32)
+        h = cp.reshape(x,(x.shape[0],512,3,2))
         # 512 channel blocks:
-        h = self.block5_1(x)
+        h = self.block5_1(h)
         h = F.dropout(h, ratio=0.4)
         h = self.block5_2(h)
         h = F.dropout(h, ratio=0.4)
