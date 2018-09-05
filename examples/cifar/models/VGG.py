@@ -109,7 +109,9 @@ class VGG(chainer.Chain):
         h = F.max_pooling_2d(h, ksize=2, stride=2)
 
         # 512 channel blocks:
+	# print("before 5_1: {}".format(h.shape))
         h = self.block5_1(h)
+	# print("after  5_1: {}".format(h.shape))
         h = F.dropout(h, ratio=0.4)
         h = self.block5_2(h)
         h = F.dropout(h, ratio=0.4)

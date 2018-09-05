@@ -122,13 +122,14 @@ class VGG_mark(chainer.Chain):
         h = self.block4_3(h)
         h = F.max_pooling_2d(h, ksize=2, stride=2)
 
-        y = cp.random.rand(512,dtype=cp.float32)
-        h = F.bias(h,y)
+        # y = cp.random.rand(512,dtype=cp.float32)
+        # h = F.bias(h,y)
 
         # 512 channel blocks:
 
-        # print("2 h: {}".format(h.shape))  # (160, 512, 2, 2)
+        print("before 5_1: {}".format(h.shape))  # (160, 512, 2, 2)
         h = self.block5_1(h)
+        print("after  5_1: {}".format(h.shape))  # 
         h = F.dropout(h, ratio=0.4)
         h = self.block5_2(h)
         h = F.dropout(h, ratio=0.4)
@@ -139,7 +140,7 @@ class VGG_mark(chainer.Chain):
         y = cp.random.rand(512,dtype=cp.float32)
         h = F.bias(h,y)
 #
-        print("3 h: {}".format(h.shape))  # (160, 512, 1, 1)
+        # print("3 h: {}".format(h.shape))  # (160, 512, 1, 1)
         h = F.dropout(h, ratio=0.5)
         h = self.fc1(h)
         h = self.bn_fc1(h)

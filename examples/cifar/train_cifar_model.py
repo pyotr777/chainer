@@ -25,7 +25,6 @@ import os
 
 # DEBUG CODE
 import logging
-import time, os
 import debug_conf
 # DEBUG CODE END
 
@@ -52,7 +51,7 @@ def main():
                         help='Metric to watch for early stopping')
     parser.add_argument('--host', type=str, help='Host name (used in log file name)')
     parser.add_argument('--debug', action='store_true', help='Log timing info')
-    parser.add_argument('--algo', type=int, default=None, help="Convolution backward algorithm for cuDNN")
+    parser.add_argument('--algo', type=str, default=None, help="Algorithm for Convolution layers backward weight gradient used in cuDNN")
     parser.add_argument('--accuracy', type=float, default=None, help='Log timing info')
     parser.add_argument('--time_limit', type=int, default=None, help="Execution time limit in seconds")
     parser.add_argument('--samples', type=int, default=None, help="Training set size")
@@ -105,8 +104,17 @@ def main():
     # DEBUG CODE END
 
     if args.algo is not None:
-        configuration.bwd_conv_algo = args.algo
-        print("BWD convolution filter algo:",configuration.bwd_conv_algo)
+        if args.algo in ["0","1","3"]:
+            try:
+                configuration.bwd_conv_algo = int(args.algo)
+            except Exception as e:
+                print("BWD convolution weight gradient algorithm invalid value: {}".format(args.algo))
+                print(e)
+                sys.exit(1)
+            print("BWD convolution weight gradient algo:",configuration.bwd_conv_algo)
+        elif args.algo == "auto":
+            chainer.using_config('autotune', True)
+            chainer.global_config.autotune = True
 
     print('GPU: {}'.format(args.gpu))
     print('# b{} l{}'.format(args.batchsize,args.learnrate))
