@@ -560,6 +560,10 @@ class Convolution2DGradW(function_node.FunctionNode):
             algo = libcudnn.getConvolutionBackwardFilterAlgorithm(
                 handle, x_desc.value, gy_desc.value, conv_desc.value,
                 filter_desc.value, _bwd_filter_pref, workspace_size)
+            # DEBUG CODE
+            if debug_conf.debug and debug_conf.log_convolution_backward:
+                logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","cudnn selected algo ",algo)
+            # DEBUG CODE END
 
         if use_tensor_core:
             # Only CUDNN_CONVOLUTION_BWD_FILTER_ALGO_1 supports

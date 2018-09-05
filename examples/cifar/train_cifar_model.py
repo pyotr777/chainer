@@ -17,7 +17,7 @@ from chainer.datasets import get_cifar10
 from chainer.datasets import get_cifar100
 
 #import models
-import os
+import os, sys
 
 # import cupy as cp
 # import random
@@ -113,7 +113,7 @@ def main():
                 sys.exit(1)
             print("BWD convolution weight gradient algo:",configuration.bwd_conv_algo)
         elif args.algo == "auto":
-            chainer.using_config('autotune', True)
+            # chainer.using_config('autotune', True)
             chainer.global_config.autotune = True
 
     print('GPU: {}'.format(args.gpu))
