@@ -94,7 +94,10 @@ def main():
         scnds = str(time.time()).split(".")[0]
         filename="chainer_timings_"+str(hostname)+"_b"+str(args.batchsize)+"e"+str(args.epoch)+"_"+scnds+".csv"
         wd = os.getcwd()
-        logfile = os.path.join(wd,filename)
+        logfile = os.path.join(wd,"timelogs")
+        if not os.path.exists(logfile):
+            os.makedirs(logfile)
+        logfile = os.path.join(logfile,filename)
         logging.basicConfig(filename=logfile,level=logging.DEBUG)
         print("Logging to {}".format(logfile))
         #logging.basicConfig(filename=filename,level=logging.DEBUG,format='%(message)s')
