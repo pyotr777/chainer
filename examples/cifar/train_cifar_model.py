@@ -17,7 +17,7 @@ from chainer.datasets import get_cifar10
 from chainer.datasets import get_cifar100
 
 #import models
-import os, sys
+import os
 
 # import cupy as cp
 # import random
@@ -80,9 +80,7 @@ def main():
 
         # Save timings in convolution_2d.py
         debug_conf.log_convolution_forward = False
-        debug_conf.log_convolution_backward_shape = False
-        debug_conf.log_convolution_backward = False
-        debug_conf.log_convolution_backward_algo = True
+        debug_conf.log_convolution_backward = True
         debug_conf.log_convolution = False
 
         if args.host:
@@ -91,13 +89,9 @@ def main():
             import socket
             hostname = socket.gethostname()
 
-        scnds = str(time.time()).split(".")[0]
-        filename="chainer_timings_"+str(hostname)+"_b"+str(args.batchsize)+"e"+str(args.epoch)+"_"+scnds+".csv"
+        filename="chainer_timings_"+str(hostname)+"_b"+str(args.batchsize)+"e"+str(args.epoch)+".csv"
         wd = os.getcwd()
-        logfile = os.path.join(wd,"timelogs")
-        if not os.path.exists(logfile):
-            os.makedirs(logfile)
-        logfile = os.path.join(logfile,filename)
+        logfile = os.path.join(wd,filename)
         logging.basicConfig(filename=logfile,level=logging.DEBUG)
         print("Logging to {}".format(logfile))
         #logging.basicConfig(filename=filename,level=logging.DEBUG,format='%(message)s')
@@ -119,7 +113,7 @@ def main():
                 sys.exit(1)
             print("BWD convolution weight gradient algo:",configuration.bwd_conv_algo)
         elif args.algo == "auto":
-            # chainer.using_config('autotune', True)
+            chainer.using_config('autotune', True)
             chainer.global_config.autotune = True
 
     print('GPU: {}'.format(args.gpu))
@@ -170,7 +164,7 @@ def main():
         train = train[:samples]
 
 
-    print('')
+    print('Training set size:',len(train),len(train[0]))
 
     if args.convolutions:
         out_channels = [int(x) for x in args.convolutions.split(',')]

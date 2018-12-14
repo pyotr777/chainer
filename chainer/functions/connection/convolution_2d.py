@@ -519,7 +519,6 @@ class Convolution2DGradW(function_node.FunctionNode):
         if debug_conf.debug:
             if debug_conf.log_convolution_backward:
                 start_time = time.time()
-            if debug_conf.log_convolution_backward_shape:
                 logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","x shape",debug_conf.csvValue(x.shape))
                 logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","gy shape",debug_conf.csvValue(gy.shape))
         # DEBUG CODE END
@@ -559,7 +558,7 @@ class Convolution2DGradW(function_node.FunctionNode):
                 x, gy, gW, conv_param + (dilation,), handle, x_desc, gy_desc,
                 conv_desc, filter_desc, workspace)
              # DEBUG CODE
-            if debug_conf.debug and debug_conf.log_convolution_backward_algo:
+            if debug_conf.debug and debug_conf.log_convolution_backward:
                 logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","x-gy-gW shape","{}-{}-{}".format(debug_conf.csvValue(x.shape),debug_conf.csvValue(gy.shape),debug_conf.csvValue(gW.shape)))
                 logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","cudnn selected algo",algo)
             # DEBUG CODE END
@@ -568,7 +567,7 @@ class Convolution2DGradW(function_node.FunctionNode):
                 handle, x_desc.value, gy_desc.value, conv_desc.value,
                 filter_desc.value, _bwd_filter_pref, workspace_size)
             # DEBUG CODE
-            if debug_conf.debug and debug_conf.log_convolution_backward_algo:
+            if debug_conf.debug and debug_conf.log_convolution_backward:
                 logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","cudnn selected algo",algo)
             # DEBUG CODE END
 
@@ -597,7 +596,7 @@ class Convolution2DGradW(function_node.FunctionNode):
             if debug_conf.log_convolution_backward:
                 point1 = time.time()
                 point1_delta = point1 - start_time
-            if debug_conf.log_convolution_backward_algo:
+            if debug_conf.log_convolution_backward:
                 logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","_bwd_filter_pref",_bwd_filter_pref)
                 logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","algo",algo)
         # DEBUG CODE END
