@@ -18,7 +18,7 @@ from chainer.datasets import get_cifar100
 
 #import models
 import os
-
+import datetime
 # import cupy as cp
 # import random
 # import numpy as np
@@ -65,12 +65,11 @@ def main():
     debug_conf.debug = args.debug
     debug = debug_conf.debug
     print("Debug:",debug_conf.debug)
+
+
+    # Use debug_conf.py to set debugging options
     if debug:
         debug_conf.start_time = time.time()
-        debug_conf.time_function_node = False
-        debug_conf.time_cuda = False
-        debug_conf.time_convert = False
-        debug_conf.time_optimizer_update = False
         log_cupy_core_array = False
 
         if log_cupy_core_array:
@@ -78,28 +77,21 @@ def main():
             debug_conf.time_cuda = False
             debug_conf.time_convert = False
 
-        # Save timings in convolution_2d.py
-        debug_conf.log_convolution_forward = False
-        debug_conf.log_convolution_backward = True
-        debug_conf.log_convolution = False
-
         if args.host:
             hostname = args.host
         else:
             import socket
             hostname = socket.gethostname()
 
-        filename="chainer_timings_"+str(hostname)+"_b"+str(args.batchsize)+"e"+str(args.epoch)+".csv"
-        wd = os.getcwd()
-        logfile = os.path.join(wd,filename)
+        now_ = datetime.datetime.now()
+        datetime_ = now_.strftime("%Y%m%d%H%M%S")
+        filename="chainer_timings_{}_b{}e{}_{}.csv".format(hostname,args.batchsize,args.epoch,datetime_)        
+        logfile = os.path.join(debug_conf.logdir,filename)
         logging.basicConfig(filename=logfile,level=logging.DEBUG)
         print("Logging to {}".format(logfile))
         #logging.basicConfig(filename=filename,level=logging.DEBUG,format='%(message)s')
         logging.info("CIFAR start at %s, batch %d, epoch %d",time.strftime("%Y/%m/%d %H:%M:%S"),args.batchsize,args.epoch)
-        if debug_conf.time_function_node:
-            logging.debug("time1;time2;time3;Input;Class")
-        else:
-            logging.debug("Address;Parameter;Value")
+        logging.debug("Address;Parameter;Value")
 
     # DEBUG CODE END
 

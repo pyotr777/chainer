@@ -229,7 +229,8 @@ Use apply() method instead.\
         if debug_conf.debug and debug_conf.time_function_node:
             start_time = time.time()
             start_time_rel = start_time - debug_conf.start_time
-            logging.debug("%s, %s, %s","function_node.py/FunctionNode:apply","start_time",start_time_rel)
+            logging.debug("%s; %s; %s","function_node.py:FunctionNode.apply","start_time",start_time_rel)
+            logging.debug("%s; %s; %s","function_node.py:FunctionNode.apply","called by",self.__class__.__name__)
         # DEBUG CODE END
 
         input_vars = [chainer.as_variable(x) for x in inputs]
@@ -248,9 +249,12 @@ Use apply() method instead.\
                     ', '.join(str(type(x)) for x in in_data)))
 
         is_debug = chainer.is_debug()
-        if is_debug:
+        if is_debug or debug_conf.debug:
             # Keep stack trace for debug
             self.stack = traceback.extract_stack()
+            # DEBUG CODE
+            if debug_conf.debug and debug_conf.time_function_node:
+                logging.debug("%s; %s; %s","function_node.py:FunctionNode.apply","call_stack",self.stack)
 
         if configuration.config.type_check:
             self._check_data_type_forward(in_data)
@@ -349,7 +353,10 @@ Use apply() method instead.\
             point3 = point3_time - point2_time
             classname = self.__class__.__name__
 
-            logging.debug("%f,%f,%f,%s,%s",point1,point2,point3,str(input_len),classname)
+            logging.debug("%s; %s; %.6f","function_node.py/FunctionNode:apply","point1",point1)
+            logging.debug("%s; %s; %.6f","function_node.py/FunctionNode:apply","point2",point2)
+            logging.debug("%s; %s; %.6f","function_node.py/FunctionNode:apply","point3",point3)
+            #logging.debug("%f,%f,%f,%s,%s",point1,point2,point3,str(input_len),classname)
             #print "{:.6f},{:.6f},{:.6f},{:<24},{}".format(point1,point2,point3,str(input_len),classname)
         # DEBUG CODE END
 

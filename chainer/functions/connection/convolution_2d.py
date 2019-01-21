@@ -202,8 +202,8 @@ class Convolution2DFunction(function_node.FunctionNode):
         # Log x and W shapes. They could have hints on 1 epoch time differences on K80
         if debug_conf.debug and debug_conf.log_convolution_forward:
             start_time = time.time()
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/_forward_gpu_core","x shape",x.shape)
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/_forward_gpu_core","W shape",W.shape)
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/_forward_gpu_core","x shape",x.shape)
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/_forward_gpu_core","W shape",W.shape)
         # DEBUG CODE END
         # Implementation using im2col
         col = conv.im2col_gpu(
@@ -230,9 +230,9 @@ class Convolution2DFunction(function_node.FunctionNode):
         if debug_conf.debug and debug_conf.log_convolution:
              point3 = time.time()
              point3_delta = point3 - point2
-             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/_forward_gpu_core","time1(s)",point1_delta)
-             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/_forward_gpu_core","time2(s)",point2_delta)
-             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/_forward_gpu_core","time3(s)",point3_delta)
+             logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/_forward_gpu_core","time1(s)",point1_delta)
+             logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/_forward_gpu_core","time2(s)",point2_delta)
+             logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/_forward_gpu_core","time3(s)",point3_delta)
         # DEBUG CODE END
 
         return y
@@ -411,7 +411,7 @@ class Convolution2DGradW(function_node.FunctionNode):
     def forward_gpu(self, inputs):
         # DEBUG CODE
         if debug_conf.debug and debug_conf.log_convolution_backward:
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:forward_gpu","inputs",str(inputs[0].shape)+","+str(inputs[1].shape))
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:forward_gpu","inputs",str(inputs[0].shape)+","+str(inputs[1].shape))
 
         # DEBUG CODE END
         self.retain_inputs((0, 1))
@@ -447,8 +447,8 @@ class Convolution2DGradW(function_node.FunctionNode):
         # Log x and gy shapes. They could have hints on 1 epoch time differences on K80
         if debug_conf.debug and debug_conf.log_convolution_backward:
             start_time = time.time()
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_gpu_core","x shape",debug_conf.csvValue(x.shape))
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_gpu_core","gy shape",debug_conf.csvValue(gy.shape))
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_gpu_core","x shape",debug_conf.csvValue(x.shape))
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_gpu_core","gy shape",debug_conf.csvValue(gy.shape))
         # DEBUG CODE END
         col = conv.im2col_gpu(
             x, self.kh, self.kw, self.sy, self.sx, self.ph, self.pw,
@@ -465,8 +465,8 @@ class Convolution2DGradW(function_node.FunctionNode):
              point2 = time.time()
              point2_delta = point2 - point1
              logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_gpu_cor","gW shape",debug_conf.csvValue(gW.shape))
-             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_gpu_cor","time1(s)",point1_delta)
-             logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_gpu_cor","time2(s)",point2_delta)
+             logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_gpu_cor","time1(s)",point1_delta)
+             logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_gpu_cor","time2(s)",point2_delta)
 
         # DEBUG CODE END
         return gW
@@ -519,8 +519,8 @@ class Convolution2DGradW(function_node.FunctionNode):
         if debug_conf.debug:
             if debug_conf.log_convolution_backward:
                 start_time = time.time()
-                logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","x shape",debug_conf.csvValue(x.shape))
-                logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","gy shape",debug_conf.csvValue(gy.shape))
+                logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","x shape",debug_conf.csvValue(x.shape))
+                logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","gy shape",debug_conf.csvValue(gy.shape))
         # DEBUG CODE END
 
         iC = c
@@ -559,8 +559,8 @@ class Convolution2DGradW(function_node.FunctionNode):
                 conv_desc, filter_desc, workspace)
              # DEBUG CODE
             if debug_conf.debug and debug_conf.log_convolution_backward:
-                logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","x-gy-gW shape","{}-{}-{}".format(debug_conf.csvValue(x.shape),debug_conf.csvValue(gy.shape),debug_conf.csvValue(gW.shape)))
-                logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","cudnn selected algo",algo)
+                logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","x-gy-gW shape","{}-{}-{}".format(debug_conf.csvValue(x.shape),debug_conf.csvValue(gy.shape),debug_conf.csvValue(gW.shape)))
+                logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","cudnn selected algo",algo)
             # DEBUG CODE END
         else:
             algo = libcudnn.getConvolutionBackwardFilterAlgorithm(
@@ -568,7 +568,7 @@ class Convolution2DGradW(function_node.FunctionNode):
                 filter_desc.value, _bwd_filter_pref, workspace_size)
             # DEBUG CODE
             if debug_conf.debug and debug_conf.log_convolution_backward:
-                logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","cudnn selected algo",algo)
+                logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","cudnn selected algo",algo)
             # DEBUG CODE END
 
         if use_tensor_core:
@@ -589,16 +589,16 @@ class Convolution2DGradW(function_node.FunctionNode):
         # DEBUG CODE
         if debug_conf.debug:
             if algo_before is not None:
-                logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","before algo was",algo_before)
-                logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","set algo to",algo)
+                logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","before algo was",algo_before)
+                logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","set algo to",algo)
 
         if debug_conf.debug:
             if debug_conf.log_convolution_backward:
                 point1 = time.time()
                 point1_delta = point1 - start_time
             if debug_conf.log_convolution_backward:
-                logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","_bwd_filter_pref",_bwd_filter_pref)
-                logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","algo",algo)
+                logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","_bwd_filter_pref",_bwd_filter_pref)
+                logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","algo",algo)
         # DEBUG CODE END
 
 
@@ -611,14 +611,14 @@ class Convolution2DGradW(function_node.FunctionNode):
         if debug_conf.debug and debug_conf.log_convolution_backward:
             point2 = time.time()
             point2_delta = point2 - point1
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","x_desc.value",x_desc.value)
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","(cudnn_deterministic - autotune - use_tensor_core) ","({}-{}-{})".format(configuration.config.cudnn_deterministic,configuration.config.autotune,use_tensor_core))
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","gy_desc.value",gy_desc.value)
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","conv_desc.value",conv_desc.value)
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","workspace_size",workspace_size)
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","filter_desc.value",filter_desc.value)
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","time1(s)",point1_delta)
-            logging.debug("%s, %s, %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","time2(s)",point2_delta)
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","x_desc.value",x_desc.value)
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","(cudnn_deterministic - autotune - use_tensor_core) ","({}-{}-{})".format(configuration.config.cudnn_deterministic,configuration.config.autotune,use_tensor_core))
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","gy_desc.value",gy_desc.value)
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","conv_desc.value",conv_desc.value)
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","workspace_size",workspace_size)
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","filter_desc.value",filter_desc.value)
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","time1(s)",point1_delta)
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","time2(s)",point2_delta)
         # DEBUG CODE END
 
         return gW,

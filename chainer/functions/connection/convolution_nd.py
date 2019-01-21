@@ -10,6 +10,11 @@ from chainer.functions.connection import convolution_2d
 from chainer.utils import conv
 from chainer.utils import conv_nd
 from chainer.utils import type_check
+# DEBUG CODE
+import logging
+import debug_conf
+import time
+# DEBUG CODE END
 
 
 if cuda.cudnn_enabled:
@@ -258,6 +263,8 @@ class ConvolutionND(function.Function):
             handle, self.filter_desc.value, gy_desc.value,
             self.conv_desc.value, x_desc.value, _bwd_data_pref,
             workspace_size)
+
+
         libcudnn.convolutionBackwardData_v3(
             handle, one.data, self.filter_desc.value, W.data.ptr,
             gy_desc.value, gy.data.ptr, self.conv_desc.value,

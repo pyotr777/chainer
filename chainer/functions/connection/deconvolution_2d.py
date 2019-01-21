@@ -11,6 +11,12 @@ from chainer.utils import argument
 from chainer.utils import conv
 from chainer.utils import type_check
 
+# DEBUG CODE
+import time
+import logging
+import debug_conf
+# DEBUG CODE END
+
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn
     libcudnn = cuda.cuda.cudnn
@@ -256,6 +262,11 @@ class Deconvolution2DFunction(function_node.FunctionNode):
                             dtype=x.dtype)
         y_desc = cudnn.create_tensor_descriptor(y)
 
+        # DEBUG CODE
+        if debug_conf.debug and debug_conf.log_convolution_backward_data:
+            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","x-y-W shape","{}-{}-{}".format(x.shape,y.shape,W.shape))
+        # DEBUG CODE END
+
         filter_desc = cudnn.create_filter_descriptor(W)
         conv_param = (self.ph, self.pw), (self.sy, self.sx), x.dtype
         dilation = (self.dy, self.dx)
@@ -289,6 +300,11 @@ class Deconvolution2DFunction(function_node.FunctionNode):
             # Only CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 supports
             # Tensor-Core in cuDNN7
             algo = libcudnn.CUDNN_CONVOLUTION_BWD_DATA_ALGO_1
+
+        # DEBUG CODE
+        if debug_conf.debug and debug_conf.log_convolution_backward_data:
+            logging.debug("%s; %s; %s","functions/connection/deconvolution_2d.py/Deconvolution2DFunction:_forward_cudnn","cudnn selected data algo",algo)
+        # DEBUG CODE END
 
         libcudnn.convolutionBackwardData_v3(
             handle, one.data, filter_desc.value, W.data.ptr,
