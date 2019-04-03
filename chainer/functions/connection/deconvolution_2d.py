@@ -72,6 +72,7 @@ class Deconvolution2DFunction(function_node.FunctionNode):
         self.dy, self.dx = _pair(dilate)
         self.group = group
 
+
     def check_type_forward(self, in_types):
         n_in = in_types.size()
         type_check.expect(2 <= n_in, n_in <= 3)
@@ -264,7 +265,7 @@ class Deconvolution2DFunction(function_node.FunctionNode):
 
         # DEBUG CODE
         if debug_conf.debug and debug_conf.log_convolution_backward_data:
-            logging.debug("%s; %s; %s","functions/connection/convolution_2d.py/Convolution2DGradW:_forward_cudnn","x-y-W shape","{}-{}-{}".format(x.shape,y.shape,W.shape))
+            logging.debug("%s; %s; %s","functions/connection/deconvolution_2d.py/Deconvolution2DFunction:_forward_cudnn","x-y-W shape","{}-{}-{}".format(x.shape,y.shape,W.shape))
         # DEBUG CODE END
 
         filter_desc = cudnn.create_filter_descriptor(W)
@@ -303,7 +304,7 @@ class Deconvolution2DFunction(function_node.FunctionNode):
 
         # DEBUG CODE
         if debug_conf.debug and debug_conf.log_convolution_backward_data:
-            logging.debug("%s; %s; %s","functions/connection/deconvolution_2d.py/Deconvolution2DFunction:_forward_cudnn","cudnn selected data algo",algo)
+            logging.debug("%s; %s; %s","functions/connection/deconvolution_2d.py/Deconvolution2DFunction:_forward_cudnn","ConvolutionBWDDataAlgo",algo)
         # DEBUG CODE END
 
         libcudnn.convolutionBackwardData_v3(
