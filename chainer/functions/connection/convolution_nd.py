@@ -191,66 +191,10 @@ class ConvolutionNDGradW(function_node.FunctionNode):
 
     def _forward_cudnn(self, x, gy):
         # Make empty arrays for result.
-<<<<<<< HEAD
-        gx = cuda.cupy.empty_like(x)
-        gW = cuda.cupy.empty_like(W)
-
-        # Get cuDNN handler and descriptors.
-        handle = cudnn.get_handle()
-        x_desc = cudnn.create_tensor_descriptor(x)
-        gy_desc = cudnn.create_tensor_descriptor(gy)
-
-        # Compute gradients.
-        oz_dtype = 'd' if x.dtype == 'd' else 'f'
-        one = numpy.array(1, dtype=oz_dtype).ctypes
-        zero = numpy.array(0, dtype=oz_dtype).ctypes
-        workspace_size = cuda.get_max_workspace_size()
-        workspace = cuda.cupy.empty((workspace_size,), dtype='b')
-
-        # Compute filter weight gradient.
-        if configuration.config.autotune and _cudnn_version_ >= 5000:
-            algo = convolution_2d._get_algorithm_bwd_filter(
-                x, gy, gW, self.conv_param, handle, x_desc, gy_desc,
-                self.conv_desc, self.filter_desc, workspace)
-        else:
-            algo = libcudnn.getConvolutionBackwardFilterAlgorithm(
-                handle, x_desc.value, gy_desc.value, self.conv_desc.value,
-                self.filter_desc.value, _bwd_filter_pref, workspace_size)
-
-        libcudnn.convolutionBackwardFilter_v3(
-            handle, one.data, x_desc.value, x.data.ptr,
-            gy_desc.value, gy.data.ptr, self.conv_desc.value,
-            algo, workspace.data.ptr, workspace_size,
-            zero.data, self.filter_desc.value, gW.data.ptr)
-
-        # Compute input gradient.
-        algo = libcudnn.getConvolutionBackwardDataAlgorithm(
-            handle, self.filter_desc.value, gy_desc.value,
-            self.conv_desc.value, x_desc.value, _bwd_data_pref,
-            workspace_size)
-
-
-        libcudnn.convolutionBackwardData_v3(
-            handle, one.data, self.filter_desc.value, W.data.ptr,
-            gy_desc.value, gy.data.ptr, self.conv_desc.value,
-            algo, workspace.data.ptr, workspace_size,
-            zero.data, x_desc.value, gx.data.ptr)
-
-        # Compute bias gradient if given and return gradients.
-        if b is None:
-            return gx, gW
-        else:
-            gb = cuda.cupy.empty_like(b)
-            libcudnn.convolutionBackwardBias(
-                handle, one.data, gy_desc.value, gy.data.ptr,
-                zero.data, self.bias_desc.value, gb.data.ptr)
-            return gx, gW, gb
-=======
         out_c = gy.shape[1]
         in_c = x.shape[1]
         gW = cuda.cupy.empty(
             (out_c, in_c) + self.ksize, dtype=self.W_dtype)
->>>>>>> update
 
         # Compute
         pad = self.pad
