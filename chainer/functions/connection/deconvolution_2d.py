@@ -53,7 +53,6 @@ class Deconvolution2DFunction(function_node.FunctionNode):
         self.dy, self.dx = _pair(dilate)
         self.groups = groups
 
-
     def check_type_forward(self, in_types):
         n_in = in_types.size()
         type_check.expect(2 <= n_in, n_in <= 3)
@@ -268,16 +267,6 @@ class Deconvolution2DFunction(function_node.FunctionNode):
             W, x, b, y, pad, stride, dilation, self.groups,
             deterministic=deterministic, auto_tune=auto_tune,
             tensor_core=tensor_core)
-
-        # DEBUG CODE
-        if debug_conf.debug and debug_conf.log_convolution_backward_data:
-            logging.debug("%s; %s; %s","functions/connection/deconvolution_2d.py/Deconvolution2DFunction:_forward_cudnn","x-y-W shape","{}-{}-{}".format(x.shape,y.shape,W.shape))
-        # DEBUG CODE END
-
-        # DEBUG CODE
-        if debug_conf.debug and debug_conf.log_convolution_backward_data:
-            logging.debug("%s; %s; %s","functions/connection/deconvolution_2d.py/Deconvolution2DFunction:_forward_cudnn","ConvolutionBWDDataAlgo",algo)
-        # DEBUG CODE END
 
         return y,
 
