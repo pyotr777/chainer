@@ -8,11 +8,6 @@ from chainer import function_node
 from chainer.utils import conv
 from chainer.utils import conv_nd
 from chainer.utils import type_check
-# DEBUG CODE
-import logging
-import debug_conf
-import time
-# DEBUG CODE END
 
 
 class ConvolutionND(function_node.FunctionNode):

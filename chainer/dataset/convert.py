@@ -5,12 +5,6 @@ import six
 
 from chainer.backends import cuda
 
-# DEBUG CODE
-import time
-import datetime
-import debug_conf
-import logging
-# DEBUG CODE END
 
 def to_device(device, x):
     """Send an array to a given device.
@@ -40,24 +34,7 @@ def to_device(device, x):
     elif device < 0:
         return cuda.to_cpu(x)
     else:
-        # DEBUG CODE
-        if debug_conf.debug and debug_conf.time_convert:
-            start = datetime.datetime.now()
-            start_time = time.time()
-            size = x.nbytes
-            logging.debug("%s,%s,%d","convert.py/to_device","x.nbytes",size)
-            logging.debug("%s,%s,%s","convert.py/to_device_"+str(size),"x.shape",str.replace(str(x.shape),",",":"))
-        # DEBUG CODE END
         arr = cuda.to_gpu(x, device)
-        # DEBUG CODE
-        if debug_conf.debug and debug_conf.time_convert:
-            end = datetime.datetime.now()
-            point1 = time.time()
-            point1_delta = point1 - start_time
-            point1_delta2 = end - start
-            logging.debug("%s,%s,%f","convert.py/to_device_"+str(size),"point1_delta (s)",point1_delta)
-            logging.debug("%s,%s,%f","convert.py/to_device_"+str(size),"point1_delta2(s)",point1_delta2.total_seconds())
-        # DEBUG CODE END
         return arr
 
 

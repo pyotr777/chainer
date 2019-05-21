@@ -12,12 +12,6 @@ from chainer.utils import argument
 from chainer.utils import conv
 from chainer.utils import type_check
 
-# DEBUG CODE
-import time
-import logging
-import debug_conf
-# DEBUG CODE END
-
 if cuda.cudnn_enabled:
     _cudnn_version = cuda.cuda.cudnn.getVersion()
 

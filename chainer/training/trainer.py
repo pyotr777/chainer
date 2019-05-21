@@ -14,10 +14,6 @@ from chainer.training import extension as extension_module
 from chainer.training import trigger as trigger_module
 from chainer.utils import argument
 
-# DEBUG CODE
-#import logging
-import debug_conf
-# DEBUG CODE END
 
 # Select the best-resolution timer function
 try:

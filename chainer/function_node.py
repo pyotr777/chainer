@@ -15,12 +15,6 @@ from chainer.utils import experimental
 from chainer.utils import type_check
 from chainer import variable
 
-# DEBUG CODE
-import time
-import logging
-import debug_conf
-# DEBUG CODE END
-
 
 class FunctionNode(object):
 
@@ -228,14 +222,6 @@ Use apply() method instead.\
 
         """
 
-        # DEBUG CODE
-        if debug_conf.debug and debug_conf.time_function_node:
-            start_time = time.time()
-            start_time_rel = start_time - debug_conf.start_time
-            logging.debug("%s; %s; %s","function_node.py:FunctionNode.apply","start_time",start_time_rel)
-            logging.debug("%s; %s; %s","function_node.py:FunctionNode.apply","called by",self.__class__.__name__)
-        # DEBUG CODE END
-
         input_vars = [chainer.as_variable(x) for x in inputs]
         in_data = tuple([x.data for x in input_vars])
         requires_grad = any([x.requires_grad for x in input_vars])
@@ -250,12 +236,9 @@ Use apply() method instead.\
                     ', '.join(str(type(x)) for x in in_data)))
 
         is_debug = chainer.is_debug()
-        if is_debug or debug_conf.debug:
+        if is_debug:
             # Keep stack trace for debug
             self.stack = traceback.extract_stack()
-            # DEBUG CODE
-            if debug_conf.debug and debug_conf.time_function_node:
-                logging.debug("%s; %s; %s","function_node.py:FunctionNode.apply","call_stack",self.stack)
 
         if configuration.config.type_check:
             self._check_data_type_forward(in_data)
@@ -269,27 +252,11 @@ Use apply() method instead.\
         for hook in hooks:
             hook.forward_preprocess(self, in_data)
 
-        # DEBUG CODE
-        if debug_conf.debug and debug_conf.time_function_node:
-            point1_time = time.time()
-            point1 = point1_time - start_time
-
-            input_len = [len(x) for x in inputs]
-            input_len = str.replace(str(input_len),",",":")
-        # DEBUG CODE END
-
         # Forward propagation
         with cuda.get_device_from_array(*in_data):
             self._input_indexes_to_retain = None
             self._output_indexes_to_retain = None
             outputs = self.forward(in_data)
-
-
-        # DEBUG CODE
-        if debug_conf.debug and debug_conf.time_function_node:
-            point2_time = time.time()
-            point2 = point2_time - point1_time
-        # DEBUG CODE END
 
         # Check for output array types
         if not isinstance(outputs, tuple):
@@ -307,8 +274,6 @@ Use apply() method instead.\
 
         for hook in hooks:
             hook.forward_postprocess(self, in_data)
-
-
 
         # NaN check of output values
         if is_debug:
@@ -346,19 +311,6 @@ Use apply() method instead.\
             self.lazy_grad_sum = configuration.config.lazy_grad_sum
             if self.lazy_grad_sum:
                 experimental('config.lazy_grad_sum')
-        
-        # DEBUG CODE
-        if debug_conf.debug and debug_conf.time_function_node:
-            point3_time = time.time()
-            point3 = point3_time - point2_time
-            classname = self.__class__.__name__
-
-            logging.debug("%s; %s; %.6f","function_node.py/FunctionNode:apply","point1",point1)
-            logging.debug("%s; %s; %.6f","function_node.py/FunctionNode:apply","point2",point2)
-            logging.debug("%s; %s; %.6f","function_node.py/FunctionNode:apply","point3",point3)
-            #logging.debug("%f,%f,%f,%s,%s",point1,point2,point3,str(input_len),classname)
-            #print "{:.6f},{:.6f},{:.6f},{:<24},{}".format(point1,point2,point3,str(input_len),classname)
-        # DEBUG CODE END
 
         return ret
 

@@ -11,11 +11,6 @@ from chainer import optimizer_hooks
 from chainer import serializer as serializer_module
 from chainer import variable
 
-# DEBUG CODE
-import time
-import debug_conf
-import logging
-# DEBUG CODE END
 
 class Hyperparameter(object):
 
@@ -406,15 +401,6 @@ class Optimizer(object):
 
         """
 
-
-        # DEBUG CODE
-        #print "Optimizer.setup() called with link type", type(link)
-        # Optimizer.setup() called with link type <class 'chainer.links.model.classifier.Classifier'>
-        #print "Classifier lossfun object type:", type(link.lossfun)
-        # Classifier lossfun object type: <type 'function'>
-
-        # DEBUG CODE END
-
         if not isinstance(link, link_module.Link):
             raise TypeError('optimization target must be a link')
         self.target = link
@@ -651,17 +637,6 @@ class GradientMethod(Optimizer):
 
         """
 
-        # DEBUG CODE
-        # print "GradientMethod.update() is called with lossfun (type)",lossfun,"(",type(lossfun),")"
-        # GradientMethod.update() is called with lossfun (type) <chainer.links.model.classifier.Classifier object at 0x7f1fff47a990> ( <class 'chainer.links.model.classifier.Classifier'> )
-
-        if debug_conf.debug and debug_conf.time_optimizer_update:
-            start_time = time.time()
-
-            #logging.debug("%s,%s,%d","optimizer.py/GradientMethod/update","x.nbytes",size)
-
-        # DEBUG CODE END
-
         if lossfun is not None:
             use_cleargrads = getattr(self, '_use_cleargrads', True)
             loss = lossfun(*args, **kwds)
@@ -671,22 +646,7 @@ class GradientMethod(Optimizer):
                 self.target.zerograds()
 
             loss.backward(loss_scale=self._loss_scale)
-            # DEBUG CODE
-            # print "Calling loss.backward. loss type is ",type(loss)
-            # Calling loss.backward. loss type is  <class 'chainer.variable.Variable'>
-
-            if debug_conf.debug and debug_conf.time_optimizer_update:
-                point1_time = time.time()
-                point1_delta = point1_time - start_time
-                logging.debug("%s,%s,%f","optimizer.py/GradientMethod/update","forward(s)",point1_delta)
-            # DEBUG CODE END
             loss.backward()
-            # DEBUG CODE
-            if debug_conf.debug and debug_conf.time_optimizer_update:
-                point2_time = time.time()
-                point2_delta = point2_time - point1_time
-                logging.debug("%s,%s,%f","optimizer.py/GradientMethod/update","backward(s)",point2_delta)
-            # DEBUG CODE END
             del loss
 
         self.reallocate_cleared_grads()
